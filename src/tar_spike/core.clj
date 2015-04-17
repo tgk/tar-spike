@@ -5,8 +5,8 @@
             TarArchiveEntry]
            [java.io
             File
-            FileInputStream
-            FileOutputStream]
+            FileOutputStream
+            FileInputStream]
            [java.util
             Date]))
 
@@ -33,5 +33,14 @@
           (.putArchiveEntry e)
           (.write (.getBytes "world!"))
           (.closeArchiveEntry)))))
+
+  (let [file (File. "testarchive.tar")]
+    (with-open [fis (FileInputStream. file)
+                tis (TarArchiveInputStream. fis)]
+      (let [e (.getNextTarEntry tis)
+            content (byte-array (.getSize e))]
+        (.read tis content 0 (.getSize e))
+        [(.getName e) (String. content) (.isCheckSumOK e)])
+      ))
 
   )
